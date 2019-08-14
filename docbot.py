@@ -79,6 +79,7 @@ def main():
     return 0
 
   doc_location = GenerateDocumentation(repo_location)
+  UpdateSylink(doc_destination, args.doc_symlink)
 
   CopyDirectory(doc_location, doc_destination)
 
