@@ -50,7 +50,7 @@ def GenerateDocumentation(repo, repo_sha):
     docset_location,
   ])
   assert os.path.exists(docset_location)
-  docset_tar_location = os.path.join(repo, 'docs', 'doxygen', 'html', 'io.flutter.engine.docset.tar.gz')
+  docset_tar_location = os.path.join(repo, 'docs', 'doxygen', 'html', 'FlutterEngine.tgz')
   subprocess.check_call([
     'tar',
     '-czvf',
@@ -60,7 +60,7 @@ def GenerateDocumentation(repo, repo_sha):
   assert os.path.exists(docset_tar_location)
   feed_file = os.path.join(repo, 'docs', 'doxygen', 'html', 'docset.xml')
   with open(feed_file, "w") as text_file:
-    text_file.write("<entry><version>%s</version><url>https://engine.chinmaygarde.com/io.flutter.engine.docset.tar.gz</url></entry>" % repo_sha)
+    text_file.write("<entry><version>%s</version><url>https://engine.chinmaygarde.com/FlutterEngine.tgz</url></entry>" % repo_sha)
   os.path.exists(feed_file)
   return doc_location
 
