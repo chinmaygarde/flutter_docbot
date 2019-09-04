@@ -35,12 +35,33 @@ def CloneRepo(repo):
   ])
   return repo_location
 
-def GenerateDocumentation(repo):
+def GenerateDocumentation(repo, repo_sha):
   subprocess.check_call([
     'doxygen',
   ], cwd=repo)
   doc_location = os.path.join(repo, 'docs', 'doxygen', 'html')
   assert os.path.exists(doc_location)
+  docset_location = os.path.join(repo, 'docs', 'doxygen', 'docset')
+  subprocess.check_call([
+    'doxygen2docset',
+    '--doxygen',
+    doc_location,
+    '--docset',
+    docset_location,
+  ])
+  assert os.path.exists(docset_location)
+  docset_tar_location = os.path.join(repo, 'docs', 'doxygen', 'html', 'io.flutter.engine.docset.tar.gz')
+  subprocess.check_call([
+    'tar',
+    '-czvf',
+    docset_tar_location,
+    '.'
+  ], cwd=docset_location)
+  assert os.path.exists(docset_tar_location)
+  feed_file = os.path.join(repo, 'docs', 'doxygen', 'html', 'docset.xml')
+  with open(feed_file, "w") as text_file:
+    text_file.write("<entry><version>%s</version><url>https://engine.chinmaygarde.com/io.flutter.engine.docset.tar.gz</url></entry>" % repo_sha)
+  os.path.exists(feed_file)
   return doc_location
 
 def UpdateSylink(target, link_name):
@@ -78,7 +99,7 @@ def main():
     RemoveDirectory(repo_location)
     return 0
 
-  doc_location = GenerateDocumentation(repo_location)
+  doc_location = GenerateDocumentation(repo_location, repo_sha)
   UpdateSylink(doc_destination, args.doc_symlink)
 
   CopyDirectory(doc_location, doc_destination)
