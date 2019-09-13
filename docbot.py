@@ -100,12 +100,19 @@ def main():
     return 0
 
   doc_location = GenerateDocumentation(repo_location, repo_sha)
+
+  if os.path.exists(args.doc_symlink) and os.path.islink(args.doc_symlink):
+    old_doc_destication = os.path.abspath(os.readlink(args.doc_symlink))
+
   UpdateSylink(doc_destination, args.doc_symlink)
 
   CopyDirectory(doc_location, doc_destination)
 
   RemoveDirectory(doc_location)
   RemoveDirectory(repo_location)
+
+  if not old_doc_destication is None:
+    RemoveDirectory(old_doc_destication)
 
   return 0
 
