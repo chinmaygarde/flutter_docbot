@@ -76,7 +76,7 @@ def GenerateSitemap(doc_location, http_base, out_path):
 
   urlset = et.Element('urlset')
   urlset.attrib['xmlns'] = 'http://www.sitemaps.org/schemas/sitemap/0.9'
-  now = datetime.datetime.now().isoformat()
+  now = datetime.datetime.now().strftime('%Y-%m-%d')
   for file in all_files:
     url = et.SubElement(urlset, 'url')
     loc = et.SubElement(url, 'loc')
