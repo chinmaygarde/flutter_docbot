@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 
 import argparse
-import tempfile
-import os
+import datetime
 import errno
-import subprocess
+import os
 import shutil
+import subprocess
 import sys
+import tempfile
+import urlparse
+import xml.etree.ElementTree as et
 
 def GetRepoSHA(repository):
   version = subprocess.check_output([
@@ -64,6 +67,24 @@ def GenerateDocumentation(repo, repo_sha):
   os.path.exists(feed_file)
   return doc_location
 
+def GenerateSitemap(doc_location, http_base, out_path):
+  all_files = []
+  for root, dirs, files in os.walk(doc_location, followlinks=True):
+    relative_dir = os.path.relpath(root, doc_location)
+    for file in files:
+      all_files.append(urlparse.urljoin(http_base, os.path.join(relative_dir, file)))
+
+  urlset = et.Element('urlset')
+  urlset.attrib['xmlns'] = 'http://www.sitemaps.org/schemas/sitemap/0.9'
+  now = datetime.datetime.now().isoformat()
+  for file in all_files:
+    url = et.SubElement(urlset, 'url')
+    loc = et.SubElement(url, 'loc')
+    lastmod = et.SubElement(url, 'lastmod')
+    loc.text = file
+    lastmod.text = now
+  et.ElementTree(urlset).write(out_path, encoding='utf-8', xml_declaration=True)
+
 def UpdateSylink(target, link_name):
   try:
     os.symlink(target, link_name)
@@ -100,6 +121,10 @@ def main():
     return 0
 
   doc_location = GenerateDocumentation(repo_location, repo_sha)
+
+  GenerateSitemap(doc_location, "https://engine.chinmaygarde.com/", os.path.join(doc_location, 'sitemap.xml'))
+
+  old_doc_destication = None
 
   if os.path.exists(args.doc_symlink) and os.path.islink(args.doc_symlink):
     old_doc_destication = os.path.abspath(os.readlink(args.doc_symlink))
