@@ -65,6 +65,10 @@ def GenerateDocumentation(repo, repo_sha):
   with open(feed_file, "w") as text_file:
     text_file.write("<entry><version>%s</version><url>https://engine.chinmaygarde.com/FlutterEngine.tgz</url></entry>" % repo_sha)
   os.path.exists(feed_file)
+  feed_file2 = os.path.join(repo, 'docs', 'doxygen', 'html', 'FlutterEngine.xml')
+  with open(feed_file2, "w") as text_file:
+    text_file.write("<entry><version>%s</version><url>https://engine.chinmaygarde.com/FlutterEngine.tgz</url></entry>" % repo_sha)
+  os.path.exists(feed_file2)
   return doc_location
 
 def GenerateSitemap(doc_location, http_base, out_path):
