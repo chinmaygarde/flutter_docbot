@@ -22,17 +22,17 @@ def GetRepoSHA(repository):
 
   return version.strip().decode("utf-8")
 
-def CloneRepo(repo):
+def TempLocation():
   temp_directory = tempfile.mkdtemp()
   assert os.path.exists(temp_directory)
-  repo_location = os.path.join(temp_directory, 'engine')
+  return os.path.join(temp_directory, 'repository')
+
+def CloneRepo(repo_location, repo):
   subprocess.check_call([
     'git',
     'clone',
     '--depth',
     '1',
-    '-b',
-    'master',
     repo,
     repo_location
   ])
@@ -98,8 +98,8 @@ def main():
       required=True)
 
   args = parser.parse_args();
-
-  repo_location = CloneRepo(args.repo)
+  repo_location = CloneRepo(TempLocation(), args.repo)
+  CloneRepo(os.path.join(repo_location, "third_party", "skia"), "https://github.com/google/skia.git")
   repo_sha = GetRepoSHA(repo_location)
   doc_destination = args.doc_destination
 
