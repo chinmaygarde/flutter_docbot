@@ -1,4 +1,4 @@
-FROM debian:bookworm as build
+FROM google/cloud-sdk:slim as build
 
 RUN apt update
 RUN apt install -y cmake ninja-build build-essential git
