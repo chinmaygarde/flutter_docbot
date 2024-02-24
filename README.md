@@ -1,4 +1,4 @@
-# Flutter Docbot
+# Flutter Doxygen Docbot
 
 Generates [Dash Docsets](https://kapeli.com/dash) for [Flutter Engine](https://github.com/flutter/engine).
 
