@@ -99,7 +99,6 @@ def main():
 
   args = parser.parse_args();
   repo_location = CloneRepo(TempLocation(), args.repo)
-  CloneRepo(os.path.join(repo_location, "third_party", "skia"), "https://github.com/google/skia.git")
   repo_sha = GetRepoSHA(repo_location)
   doc_destination = args.doc_destination
 
