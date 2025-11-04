@@ -1,5 +1,5 @@
 build: clean
-	python3 ./docbot.py --repo https://github.com/flutter/engine.git --doc-destination build
+	python3 ./docbot.py --repo https://github.com/flutter/flutter.git --doc-destination build
 
 clean:
 	rm -rf build
