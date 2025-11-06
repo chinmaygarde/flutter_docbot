@@ -9,7 +9,7 @@ A self-updating feed of the [Doxygen documentation generated from Flutter Engine
 A Dash Docset from the same documentation is also generated and the following self-updating feed can be added to Doxygen:
 
 ```sh
-https://engine.chinmaygarde.com/docset.xml
+https://engine.chinmaygarde.com/FlutterEngine.xml
 ```
 
 Subscribe to this feed in Dash using `Preferences` -> `Downloads` -> `+` icon at the bottom, and pasting in that feed.
