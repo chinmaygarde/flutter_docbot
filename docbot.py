@@ -42,13 +42,21 @@ def GenerateDocumentation(repo, repo_sha):
   engine_location = os.path.join(os.path.abspath(repo), 'engine/src/flutter')
   doxygen_location = os.path.join(engine_location, 'docs/doxygen')
 
+  with open(os.path.join(engine_location, "Doxyfile"), "rb") as f:
+    doxy_content = f.read() + b"\nSITEMAP_URL=https://engine.chinmaygarde.com\nPROJECT_NAME=\"Flutter Engine Uber Docs\"\nPROJECT_BRIEF=\"Docs for the entire Flutter Engine repo.\"\n"
 
   # Use Doxygen to create the HTML documentation.
-  subprocess.check_call([
-    'doxygen',
-  ], cwd=engine_location)
+  subprocess.run([
+      'doxygen',
+      '-',
+    ],
+    cwd=engine_location,
+    input=doxy_content,
+    check=True,
+  )
   doc_location = os.path.join(doxygen_location, 'html')
   assert os.path.exists(doc_location)
+
 
 
   # Use doxygen2docset to create a docset from the generated HTML documentation.
