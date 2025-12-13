@@ -1,19 +1,17 @@
 # Build in one container and copy over the built artifacts to the Caddy container.
 FROM debian:trixie AS doc_builder
 
-RUN apt update
-RUN apt install -y cmake ninja-build build-essential git just curl zip unzip tar pkg-config doxygen make git
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
+RUN apt update
+RUN apt install -y just wget git doxygen
+
 # Install doxygen2docset
-RUN git clone https://github.com/chinmaygarde/doxygen2docset /src
-ENV VCPKG_ROOT="/src/vcpkg"
-RUN git clone https://github.com/microsoft/vcpkg.git ${VCPKG_ROOT}
-RUN ${VCPKG_ROOT}/bootstrap-vcpkg.sh
-WORKDIR /src
-RUN git checkout 5f26f78989d5f5b43bb13fac6ab84b89b88734bc
-RUN just sync
-RUN just install
+RUN mkdir -p /src/doxygen2docset
+WORKDIR /src/doxygen2docset
+RUN wget https://github.com/chinmaygarde/doxygen2docset/releases/download/v0.2.2/doxygen2docset-linux-$(uname -m).tar.gz
+RUN tar -xzvf doxygen2docset-linux-$(uname -m).tar.gz
+RUN cp /src/doxygen2docset/bin/doxygen2docset /usr/local/bin
 
 # Generate documentation.
 COPY . /flutter_docbot
