@@ -1,31 +1,26 @@
-
-# First build doxygen2docset as there are no official build rules.
-FROM debian:trixie AS doxygen2docset_builder
+# Build in one container and copy over the built artifacts to the Caddy container.
+FROM debian:trixie AS doc_builder
 
 RUN apt update
-RUN apt install -y cmake ninja-build build-essential git
-RUN git clone https://github.com/chinmaygarde/doxygen2docset /src
-RUN mkdir -p /src/build
-WORKDIR /src/build
-RUN git submodule update --init --recursive
-RUN cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release
-RUN ninja
-
-
-# Then build the documentation using doxygen and package it up via doxygen2docset.
-FROM debian:trixie AS documentation_builder
-
-COPY . /src
-COPY --from=doxygen2docset_builder /src/build/source/doxygen2docset /usr/local/bin/
+RUN apt install -y cmake ninja-build build-essential git just curl zip unzip tar pkg-config doxygen make git
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+# Install doxygen2docset
+RUN git clone https://github.com/chinmaygarde/doxygen2docset /src
+ENV VCPKG_ROOT="/src/vcpkg"
+RUN git clone https://github.com/microsoft/vcpkg.git ${VCPKG_ROOT}
+RUN ${VCPKG_ROOT}/bootstrap-vcpkg.sh
 WORKDIR /src
-RUN apt update -y
-RUN apt install -y doxygen make git
-RUN make
+RUN git checkout 5f26f78989d5f5b43bb13fac6ab84b89b88734bc
+RUN just sync
+RUN just install
 
+# Generate documentation.
+COPY . /flutter_docbot
+WORKDIR /flutter_docbot
+RUN just
 
-# Move the built documentation into the caddy container.
+# Move the built documentation into the Caddy container.
 FROM caddy:alpine
-
-COPY --from=documentation_builder /src/build /www
+COPY --from=doc_builder /flutter_docbot/build /www
 ENTRYPOINT ["caddy", "file-server", "--browse", "--root", "/www"]

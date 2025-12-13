@@ -3,3 +3,6 @@ build: clean
 
 clean:
 	rm -rf build
+
+docker:
+	docker build .
