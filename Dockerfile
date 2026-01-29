@@ -1,6 +1,11 @@
 # Build in one container and copy over the built artifacts to the Caddy container.
 FROM debian:trixie AS doc_builder
 
+LABEL org.opencontainers.image.authors=chinmaygarde@gmail.com
+LABEL org.opencontainers.image.source=https://github.com/chinmaygarde/flutter_docbot
+LABEL org.opencontainers.image.description="Serve Doxygen Documentation & Dash Docsets for the entire Flutter Engine"
+LABEL org.opencontainers.image.licenses=MIT
+
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 RUN apt update
