@@ -22,7 +22,7 @@ Subscribe to this feed in Dash using `Preferences` -> `Downloads` -> `+` icon at
 To host the documentation server yourself, use Docker to run the most up-to-date container.
 
 ```sh
-docker run --platform linux/amd64 -p 8080:80 ghcr.io/chinmaygarde/flutter_docbot:main
+docker run -p 8080:80 ghcr.io/chinmaygarde/flutter_docbot:main
 ```
 
 The documentation will be available at port 8080.
